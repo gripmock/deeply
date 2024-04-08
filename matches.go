@@ -28,7 +28,7 @@ func slicesDeepMatches(expect, actual any, compare cmp) bool {
 	a := reflect.ValueOf(expect)
 	b := reflect.ValueOf(actual)
 
-	if a.Kind() != reflect.Slice || b.Kind() != reflect.Slice || a.Len() > b.Len() {
+	if a.Kind() != reflect.Slice || b.Kind() != reflect.Slice || a.Len() != b.Len() {
 		return false
 	}
 

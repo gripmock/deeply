@@ -88,12 +88,12 @@ func TestMatches_Slices_Left(t *testing.T) {
 	require.True(t, deeply.Matches([]int{1, 2, 3}, []int{1, 2, 3}))
 
 	require.False(t, deeply.Matches([]int{1, 3, 2}, []int{1, 2, 3}))
-	require.True(t, deeply.Matches([]int{1, 2}, []int{1, 2, 3}))
+	require.False(t, deeply.Matches([]int{1, 2}, []int{1, 2, 3}))
 
 	require.True(t, deeply.Matches([]interface{}{1, 2, 3}, []interface{}{1, 2, 3}))
 
 	require.False(t, deeply.Matches([]interface{}{1, 3, 2}, []interface{}{1, 2, 3}))
-	require.True(t, deeply.Matches([]interface{}{1, 2}, []interface{}{1, 2, 3}))
+	require.False(t, deeply.Matches([]interface{}{1, 2}, []interface{}{1, 2, 3}))
 }
 
 func TestMatches_Slices_Right(t *testing.T) {
@@ -127,4 +127,6 @@ func TestMatches_Slices_OrderIgnore(t *testing.T) {
 func TestMatches_Boundary(t *testing.T) {
 	require.False(t, deeply.Matches([]string{"a", "a", "a"}, []string{"a", "b", "c"}))
 	require.False(t, deeply.Matches([]string{"a", "b", "c"}, []string{"a", "a", "a"}))
+
+	require.True(t, deeply.Matches([]string{"[a]", "[b]", "[cd]"}, []string{"a", "b", "d"}))
 }
