@@ -120,4 +120,35 @@ func TestEquals_Slices_OrderIgnore(t *testing.T) {
 func TestEquals_Boundary(t *testing.T) {
 	require.False(t, deeply.Equals([]string{"a", "a", "a"}, []string{"a", "b", "c"}))
 	require.False(t, deeply.Equals([]string{"a", "b", "c"}, []string{"a", "a", "a"}))
+	require.False(t, deeply.Equals(nil, false))
+
+	require.True(t, deeply.Equals(nil, nil))
+
+	require.True(t, deeply.Equals(map[string]interface{}{
+		"name": "Afra Gokce",
+		"age":  1,
+		"girl": true,
+		"null": nil,
+		"greetings": map[string]interface{}{
+			"hola":    "mundo",
+			"merhaba": "dunya",
+		},
+		"cities": []interface{}{
+			"Istanbul",
+			"Jakarta",
+		},
+	}, map[string]interface{}{
+		"name": "Afra Gokce",
+		"age":  1,
+		"girl": true,
+		"null": nil,
+		"greetings": map[string]interface{}{
+			"hola":    "mundo",
+			"merhaba": "dunya",
+		},
+		"cities": []interface{}{
+			"Istanbul",
+			"Jakarta",
+		},
+	}))
 }

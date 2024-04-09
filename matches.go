@@ -25,6 +25,10 @@ func slicesDeepMatches(expect, actual any, compare cmp) bool {
 		return false
 	}
 
+	if reflect.TypeOf(expect) == nil {
+		return true
+	}
+
 	a := reflect.ValueOf(expect)
 	b := reflect.ValueOf(actual)
 
@@ -38,6 +42,10 @@ func slicesDeepMatches(expect, actual any, compare cmp) bool {
 func mapDeepMatches(expect, actual any, compare cmp) bool {
 	if reflect.TypeOf(expect) != reflect.TypeOf(actual) {
 		return false
+	}
+
+	if reflect.TypeOf(expect) == nil {
+		return true
 	}
 
 	if reflect.TypeOf(expect).Kind() != reflect.Map {

@@ -105,3 +105,12 @@ func TestRankMatch_Map_Right(t *testing.T) {
 
 	require.Equal(t, []any{b, c}, ranker(a, []any{c, b}))
 }
+
+func TestRankMatch_Boundary(t *testing.T) {
+	require.Equal(t, []any{nil, false, true, 0, 1}, ranker(nil, []any{false, true, 0, 1, nil}))
+	require.Equal(t,
+		[]any{[]string{"a", "b", "c"}, []string{"a", "b", "d"}, []string{"a", "c", "d"}},
+		ranker(
+			[]string{"[a]", "[b]", "[cd]"},
+			[]any{[]string{"a", "b", "c"}, []string{"a", "b", "d"}, []string{"a", "c", "d"}}))
+}

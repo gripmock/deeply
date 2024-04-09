@@ -127,6 +127,36 @@ func TestMatches_Slices_OrderIgnore(t *testing.T) {
 func TestMatches_Boundary(t *testing.T) {
 	require.False(t, deeply.Matches([]string{"a", "a", "a"}, []string{"a", "b", "c"}))
 	require.False(t, deeply.Matches([]string{"a", "b", "c"}, []string{"a", "a", "a"}))
+	require.False(t, deeply.Matches(nil, false))
 
 	require.True(t, deeply.Matches([]string{"[a]", "[b]", "[cd]"}, []string{"a", "b", "d"}))
+	require.True(t, deeply.Matches(nil, nil))
+
+	require.True(t, deeply.Matches(map[string]interface{}{
+		"name": "Afra Gokce",
+		"age":  1,
+		"girl": true,
+		"null": nil,
+		"greetings": map[string]interface{}{
+			"hola":    "mundo",
+			"merhaba": "dunya",
+		},
+		"cities": []interface{}{
+			"Istanbul",
+			"Jakarta",
+		},
+	}, map[string]interface{}{
+		"name": "Afra Gokce",
+		"age":  1,
+		"girl": true,
+		"null": nil,
+		"greetings": map[string]interface{}{
+			"hola":    "mundo",
+			"merhaba": "dunya",
+		},
+		"cities": []interface{}{
+			"Istanbul",
+			"Jakarta",
+		},
+	}))
 }

@@ -19,6 +19,10 @@ func mapDeepContains(expect, actual any, compare cmp) bool {
 		return false
 	}
 
+	if reflect.TypeOf(expect) == nil {
+		return true
+	}
+
 	if reflect.TypeOf(expect).Kind() != reflect.Map {
 		return false
 	}
@@ -36,6 +40,10 @@ func mapDeepContains(expect, actual any, compare cmp) bool {
 func slicesDeepContains(expect, actual any, compare cmp) bool {
 	if reflect.TypeOf(expect) != reflect.TypeOf(actual) {
 		return false
+	}
+
+	if reflect.TypeOf(expect) == nil {
+		return true
 	}
 
 	a := reflect.ValueOf(expect)

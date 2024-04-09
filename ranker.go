@@ -48,6 +48,10 @@ func mapRankMatch(expect, actual any, compare ranker) float64 {
 		return 0
 	}
 
+	if reflect.TypeOf(expect) == nil {
+		return 1
+	}
+
 	if reflect.TypeOf(expect).Kind() != reflect.Map {
 		return 0
 	}
@@ -75,6 +79,10 @@ func mapRankMatch(expect, actual any, compare ranker) float64 {
 func slicesRankMatch(expect, actual any, compare ranker) float64 {
 	if reflect.TypeOf(expect) != reflect.TypeOf(actual) {
 		return 0
+	}
+
+	if reflect.TypeOf(expect) == nil {
+		return 1
 	}
 
 	a := reflect.ValueOf(expect)
