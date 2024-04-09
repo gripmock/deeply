@@ -35,7 +35,7 @@ func rank(expect, actual interface{}) float64 {
 	if compile != nil && err == nil {
 		results := compile.FindStringIndex(actualStr)
 
-		if len(results) == 2 {
+		if len(results) == 2 { //nolint:gomnd
 			return float64(results[1]-results[0]) / float64(len(actualStr))
 		}
 	}
@@ -97,7 +97,7 @@ func slicesRankMatch(expect, actual any, compare ranker) float64 {
 
 func distance(s, t string) float64 {
 	r1, r2 := []rune(s), []rune(t)
-	column := make([]int, 1, 64)
+	column := make([]int, 1, 64) //nolint:gomnd
 
 	for y := 1; y <= len(r1); y++ {
 		column = append(column, y)
