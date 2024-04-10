@@ -174,6 +174,12 @@ func TestContains_Boundary(t *testing.T) {
 
 	require.True(t, deeply.Contains(nil, nil))
 
+	require.False(t, deeply.Contains(map[string]interface{}{
+		"field1": "hello",
+	}, map[string]interface{}{
+		"field2": "hello field1",
+	}))
+
 	require.True(t, deeply.Contains(map[string]interface{}{
 		"name": "Afra Gokce",
 		"age":  1,

@@ -38,7 +38,8 @@ func mapDeepEquals(expect, actual reflect.Value, compare cmp) bool {
 	res := 0
 
 	for _, v := range expect.MapKeys() {
-		if compare(expect.MapIndex(v).Interface(), actual.MapIndex(v).Interface()) {
+		if actual.MapIndex(v).Kind() != reflect.Invalid &&
+			compare(expect.MapIndex(v).Interface(), actual.MapIndex(v).Interface()) {
 			res++
 		}
 	}
