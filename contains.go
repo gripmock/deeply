@@ -46,10 +46,14 @@ func slicesDeepContains(expect, actual any, compare cmp) bool {
 		return true
 	}
 
+	if reflect.TypeOf(expect).Kind() != reflect.Slice {
+		return false
+	}
+
 	a := reflect.ValueOf(expect)
 	b := reflect.ValueOf(actual)
 
-	if a.Kind() != reflect.Slice || b.Kind() != reflect.Slice || a.Len() > b.Len() {
+	if a.Len() > b.Len() {
 		return false
 	}
 
