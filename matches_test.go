@@ -124,11 +124,8 @@ func TestMatches_Slices_OrderIgnore(t *testing.T) {
 	require.False(t, deeply.MatchesIgnoreArrayOrder([]interface{}{1, 2, 3}, []interface{}{1, 2}))
 }
 
-func TestMatches_Boundary(t *testing.T) {
-	require.False(t, deeply.Matches([]string{"a", "a", "a"}, []string{"a", "b", "c"}))
-	require.False(t, deeply.Matches([]string{"a", "b", "c"}, []string{"a", "a", "a"}))
-	require.False(t, deeply.Matches(nil, false))
-
+//nolint:funlen
+func TestMatches_Boundary_True(t *testing.T) {
 	require.True(t, deeply.Matches([]string{"[a]", "[b]", "[cd]"}, []string{"a", "b", "d"}))
 	require.True(t, deeply.Matches(nil, nil))
 
@@ -157,6 +154,84 @@ func TestMatches_Boundary(t *testing.T) {
 		"cities": []interface{}{
 			"Istanbul",
 			"Jakarta",
+		},
+	}))
+
+	require.True(t, deeply.Matches(map[string]interface{}{
+		"key": "[a-z]{3}ue",
+		"greetings": map[string]interface{}{
+			"hola":    1,
+			"merhaba": true,
+			"hello":   "^he[l]{2,}o$",
+		},
+		"cities": []interface{}{
+			"Istanbul",
+			"Jakarta",
+			".*",
+		},
+		"mixed": []interface{}{
+			5.5,
+			false,
+			".*",
+		},
+	}, map[string]interface{}{
+		"key": "value",
+		"greetings": map[string]interface{}{
+			"hola":    1,
+			"merhaba": true,
+			"hello":   "helllllo",
+		},
+		"cities": []interface{}{
+			"Istanbul",
+			"Jakarta",
+			"Gotham",
+		},
+		"mixed": []interface{}{
+			5.5,
+			false,
+			"Gotham",
+		},
+	}))
+}
+
+func TestMatches_Boundary_False(t *testing.T) {
+	require.False(t, deeply.Matches([]string{"a", "a", "a"}, []string{"a", "b", "c"}))
+	require.False(t, deeply.Matches([]string{"a", "b", "c"}, []string{"a", "a", "a"}))
+	require.False(t, deeply.Matches(nil, false))
+
+	require.False(t, deeply.Matches(map[string]interface{}{
+		"key": "[a-z]{3}ue",
+		"greetings": map[string]interface{}{
+			"hola":    1,
+			"merhaba": true,
+			"hello":   "^he[l]{2,}o$",
+		},
+		"cities": []interface{}{
+			"Istanbul",
+			"Jakarta",
+			".*",
+		},
+		"mixed": []interface{}{
+			5.5,
+			false,
+			".*",
+		},
+	}, map[string]interface{}{
+		"key": "value",
+		"greetings": map[string]interface{}{
+			"hola":    1,
+			"merhaba": true,
+			"hello":   "helllllo",
+		},
+		"cities": []interface{}{
+			"Istanbul",
+			"Jakarta",
+			"Gotham",
+		},
+		"mixed": []interface{}{
+			false,
+			5.5,
+			"Gotham",
 		},
 	}))
 }

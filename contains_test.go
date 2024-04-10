@@ -142,6 +142,15 @@ func TestContains_MapStable(t *testing.T) {
 
 	require.True(t, deeply.ContainsIgnoreArrayOrder(a, b))
 	require.True(t, deeply.ContainsIgnoreArrayOrder(b, a))
+
+	require.False(t, deeply.ContainsIgnoreArrayOrder(
+		[]string{"a", "a", "a"}, []string{"a", "b", "c", "a"}))
+	require.False(t, deeply.ContainsIgnoreArrayOrder(
+		[]string{"a", "a", "a"}, []string{"a", "b", "c"}))
+
+	require.False(t, deeply.Contains([]string{"a", "c", "b"}, []string{"a", "b", "c"}))
+
+	require.True(t, deeply.ContainsIgnoreArrayOrder([]string{"a", "c", "b"}, []string{"a", "b", "c"}))
 }
 
 func TestContains_Slices_OrderIgnore(t *testing.T) {
