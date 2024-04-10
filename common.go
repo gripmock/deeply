@@ -7,15 +7,13 @@ import (
 type cmp func(expect, actual any) bool
 
 func slicesDeepEquals(expect, actual reflect.Value, compare cmp) bool {
-	res := 0
-
 	for i := range expect.Len() {
-		if compare(expect.Index(i).Interface(), actual.Index(i).Interface()) {
-			res++
+		if !compare(expect.Index(i).Interface(), actual.Index(i).Interface()) {
+			return false
 		}
 	}
 
-	return res == expect.Len()
+	return true
 }
 
 func slicesDeepEqualContains(expect, actual reflect.Value, compare cmp) bool {
@@ -35,14 +33,12 @@ func slicesDeepEqualContains(expect, actual reflect.Value, compare cmp) bool {
 }
 
 func mapDeepEquals(expect, actual reflect.Value, compare cmp) bool {
-	res := 0
-
 	for _, v := range expect.MapKeys() {
-		if actual.MapIndex(v).Kind() != reflect.Invalid &&
-			compare(expect.MapIndex(v).Interface(), actual.MapIndex(v).Interface()) {
-			res++
+		if actual.MapIndex(v).Kind() == reflect.Invalid ||
+			!compare(expect.MapIndex(v).Interface(), actual.MapIndex(v).Interface()) {
+			return false
 		}
 	}
 
-	return res == expect.Len()
+	return true
 }

@@ -61,19 +61,13 @@ func mapRankMatch(expect, actual any, compare ranker) float64 {
 
 	var res float64
 
-	for _, v := range left.MapKeys() {
-		if right.MapIndex(v).IsValid() && right.MapIndex(v).CanInterface() {
-			res += compare(left.MapIndex(v).Interface(), right.MapIndex(v).Interface())
-		}
-	}
-
 	for _, v := range right.MapKeys() {
 		if left.MapIndex(v).IsValid() && left.MapIndex(v).CanInterface() {
 			res += compare(left.MapIndex(v).Interface(), right.MapIndex(v).Interface())
 		}
 	}
 
-	return res / float64(left.Len()+right.Len())
+	return res / float64(max(left.Len(), right.Len()))
 }
 
 func slicesRankMatch(expect, actual any, compare ranker) float64 {
