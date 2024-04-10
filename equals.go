@@ -34,7 +34,7 @@ func mapDeepEqual(expect, actual any, compare cmp) bool {
 		return false
 	}
 
-	return mapDeepEqualContains(left, right, compare)
+	return mapDeepEquals(left, right, compare)
 }
 
 func slicesDeepEqual(expect, actual any, compare cmp) bool {
