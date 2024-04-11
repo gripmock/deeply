@@ -88,7 +88,7 @@ func slicesRankMatch(expect, actual any, compare ranker) float64 {
 
 	var res float64
 
-	for i := range max(a.Len(), b.Len()) {
+	for i := range a.Len() {
 		if i < b.Len() && b.Index(i).IsValid() && b.Index(i).CanInterface() {
 			res += compare(a.Index(i).Interface(), b.Index(i).Interface())
 		}
