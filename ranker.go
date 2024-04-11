@@ -61,19 +61,22 @@ func mapRankMatch(expect, actual any, compare ranker) float64 {
 
 	var res float64
 
-	for _, v := range right.MapKeys() {
-		if left.MapIndex(v).IsValid() && left.MapIndex(v).CanInterface() {
-			res += compare(left.MapIndex(v).Interface(), right.MapIndex(v).Interface())
+	marked := make(map[int]struct{}, right.Len())
+
+	for _, v1 := range left.MapKeys() {
+		for j, v2 := range right.MapKeys() {
+			if _, ok := marked[j]; ok {
+				continue
+			}
+
+			if result := compare(left.MapIndex(v1).Interface(), right.MapIndex(v2).Interface()); result != 0 {
+				res += result
+				marked[j] = struct{}{}
+			}
 		}
 	}
 
-	for _, v := range left.MapKeys() {
-		if right.MapIndex(v).IsValid() && right.MapIndex(v).CanInterface() {
-			res += compare(left.MapIndex(v).Interface(), right.MapIndex(v).Interface())
-		}
-	}
-
-	return res / float64(2*max(left.Len(), right.Len()))
+	return res / float64(max(left.Len(), right.Len()))
 }
 
 func slicesRankMatch(expect, actual any, compare ranker) float64 {
@@ -93,20 +96,22 @@ func slicesRankMatch(expect, actual any, compare ranker) float64 {
 	}
 
 	var res float64
+	marked := make(map[int]struct{}, b.Len())
 
 	for i := range a.Len() {
-		if i < b.Len() && b.Index(i).IsValid() && b.Index(i).CanInterface() {
-			res += compare(a.Index(i).Interface(), b.Index(i).Interface())
+		for j := range b.Len() {
+			if _, ok := marked[j]; ok {
+				continue
+			}
+
+			if result := compare(a.Index(i).Interface(), b.Index(j).Interface()); result != 0 {
+				res += result
+				marked[j] = struct{}{}
+			}
 		}
 	}
 
-	for i := range b.Len() {
-		if i < a.Len() && a.Index(i).IsValid() && a.Index(i).CanInterface() {
-			res += compare(a.Index(i).Interface(), b.Index(i).Interface())
-		}
-	}
-
-	return res / float64(2*max(a.Len(), b.Len()))
+	return res / float64(max(a.Len(), b.Len()))
 }
 
 func distance(s, t string) float64 {

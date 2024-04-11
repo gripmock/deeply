@@ -113,4 +113,11 @@ func TestRankMatch_Boundary(t *testing.T) {
 		ranker(
 			[]string{"[a]", "[b]", "[cd]"},
 			[]any{[]string{"a", "b", "c"}, []string{"a", "b", "d"}, []string{"a", "c", "d"}}))
+
+	require.Greater(t, deeply.RankMatch(map[string]interface{}{
+		"field1": "hello field1",
+		"field3": "hello field3",
+	}, map[string]interface{}{
+		"field1": "hello field1",
+	}), 0.)
 }
