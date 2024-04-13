@@ -76,7 +76,13 @@ func mapRankMatch(expect, actual any, compare ranker) float64 {
 		}
 	}
 
-	return res / float64(max(left.Len(), right.Len()))
+	total := max(left.Len(), right.Len())
+
+	if res == 0 && total == 0 {
+		return 1
+	}
+
+	return res / float64(total)
 }
 
 func slicesRankMatch(expect, actual any, compare ranker) float64 {
@@ -111,7 +117,13 @@ func slicesRankMatch(expect, actual any, compare ranker) float64 {
 		}
 	}
 
-	return res / float64(max(a.Len(), b.Len()))
+	total := max(a.Len(), b.Len())
+
+	if res == 0 && total == 0 {
+		return 1
+	}
+
+	return res / float64(total)
 }
 
 func distance(s, t string) float64 {
