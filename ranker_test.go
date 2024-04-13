@@ -120,4 +120,6 @@ func TestRankMatch_Boundary(t *testing.T) {
 	}, map[string]interface{}{
 		"field1": "hello field1",
 	}), 0.)
+
+	require.Greater(t, deeply.RankMatch(map[string]interface{}{}, map[string]interface{}{}), 0.)
 }
