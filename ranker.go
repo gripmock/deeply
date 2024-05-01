@@ -85,6 +85,7 @@ func mapRankMatch(expect, actual any, compare ranker) float64 {
 	return res / float64(total)
 }
 
+//nolint:cyclop
 func slicesRankMatch(expect, actual any, compare ranker) float64 {
 	if reflect.TypeOf(expect) != reflect.TypeOf(actual) {
 		return 0
@@ -102,6 +103,7 @@ func slicesRankMatch(expect, actual any, compare ranker) float64 {
 	}
 
 	var res float64
+
 	marked := make(map[int]struct{}, b.Len())
 
 	for i := range a.Len() {
