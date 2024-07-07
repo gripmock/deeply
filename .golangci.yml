@@ -1,20 +1,13 @@
 run:
-  go: "1.22"
   timeout: 1m
 linters:
   enable-all: true
   disable:
+    # turn on later
+    - godox
     # deprecated
-    - nosnakecase
-    - structcheck
-    - interfacer
-    - deadcode
-    - exhaustivestruct
-    - maligned
-    - ifshort
-    - varcheck
-    - golint
-    - scopelint
+    - gomnd
+    - execinquery
     # not relevant
     - varnamelen
     - wrapcheck
@@ -23,7 +16,7 @@ linters:
     - dupl
 linters-settings:
   lll:
-    line-length: 160
+    line-length: 140
   gci:
     sections:
       - Standard
