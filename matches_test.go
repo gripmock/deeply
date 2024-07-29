@@ -124,6 +124,10 @@ func TestMatches_Slices_OrderIgnore(t *testing.T) {
 	require.False(t, deeply.MatchesIgnoreArrayOrder([]interface{}{1, 2, 3}, []interface{}{1, 2}))
 }
 
+func TestMatches_RegularDigits(t *testing.T) {
+	require.True(t, deeply.Matches("[0-9]", 9))
+}
+
 //nolint:funlen
 func TestMatches_Boundary_True(t *testing.T) {
 	require.True(t, deeply.Matches([]string{"[a]", "[b]", "[cd]"}, []string{"a", "b", "d"}))
