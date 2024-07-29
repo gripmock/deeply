@@ -10,30 +10,33 @@ type ranker func(expect, actual interface{}) float64
 
 // RankMatch is the main function used to rank matches between two values.
 //
-// It will recursively call mapRankMatch and slicesRankMatch to rank the matches
-// between the maps and slices respectively, and then call rank to rank the
-// matches between the remaining values.
-//
-// It returns the sum of the matches between the maps and slices, and the
-// matches between the remaining values.
+// This function recursively ranks the matches between maps and slices, and then
+// ranks the matches between the remaining values. The function returns the sum
+// of the matches between the maps and slices, and the matches between the
+// remaining values.
 //
 // Parameters:
-// - expect: The expected value.
-// - actual: The actual value.
+//   - expect: The expected value.
+//   - actual: The actual value.
 //
 // Returns:
-// - The total match score between the expected and actual values.
+//   - The total match score between the expected and actual values.
 func RankMatch(expect, actual any) float64 {
-	// Rank the matches between the maps and slices recursively.
-	mapMatch := mapRankMatch(expect, actual, RankMatch)
-	slicesMatch := slicesRankMatch(expect, actual, RankMatch)
+	// Initialize the total score to 0.
+	result := 0.0
 
 	// Rank the matches between the remaining values.
-	remainingMatch := rank(expect, actual)
+	result += rank(expect, *&actual) //nolint:staticcheck
+
+	// Call slicesRankMatch to rank the matches between the maps and slices.
+	result += slicesRankMatch(expect, *&actual, RankMatch) //nolint:staticcheck
+
+	// Call mapRankMatch to rank the matches between the maps and slices.
+	result += mapRankMatch(expect, *&actual, RankMatch) //nolint:staticcheck
 
 	// Return the sum of the matches between the maps and slices, and the
 	// matches between the remaining values.
-	return mapMatch + slicesMatch + remainingMatch
+	return result
 }
 
 // rank is a function that ranks the matches between two strings.
@@ -88,25 +91,37 @@ func rank(expect, actual interface{}) float64 {
 }
 
 // mapRankMatch calculates the match score between two maps.
+//
 // It iterates over the keys of the left map and finds the corresponding key in
 // the right map. If a match is found, it calculates the match score between
 // the values of the keys and adds it to the total score. It marks the keys
 // that have been matched to avoid duplicate matches. The function returns the
 // total score divided by the maximum number of keys in the two maps.
+//
+// Parameters:
+//   - expect: The expected map.
+//   - actual: The actual map.
+//   - compare: The ranker function used to compare values.
+//
+// Returns:
+//   - The match score between the expected and actual maps.
+//
+//nolint:funlen,cyclop
 func mapRankMatch(expect, actual any, compare ranker) float64 {
-	// Check if the types of the expected and actual values are the same and
-	// return 0 if they are not.
+	// Check if the types of the expected and actual values are the same.
+	// If they are not, return 0.
 	if reflect.TypeOf(expect) != reflect.TypeOf(actual) {
 		return 0
 	}
 
-	// Check if the types of the expected and actual values are nil and return
-	// 1 if they are.
+	// Check if the types of the expected and actual values are nil.
+	// If they are, return 1.
 	if reflect.TypeOf(expect) == nil {
 		return 1
 	}
 
-	// Check if the expected value is a map and return 0 if it is not.
+	// Check if the expected value is a map.
+	// If it is not, return 0.
 	if reflect.TypeOf(expect).Kind() != reflect.Map {
 		return 0
 	}
@@ -118,29 +133,36 @@ func mapRankMatch(expect, actual any, compare ranker) float64 {
 	// Initialize the total score.
 	var res float64
 
-	// Create a map to keep track of the keys that have been marked as matched.
-	marked := make(map[int]struct{}, right.Len())
+	// Calculate the maximum number of keys in the two maps.
+	total := max(left.Len(), right.Len())
+
+	// Create a map to keep track of the keys that have been matched.
+	marked := make(map[reflect.Value]bool, total)
 
 	// Iterate over the keys of the left map.
-	for _, v1 := range left.MapKeys() {
-		// Iterate over the keys of the right map.
-		for j, v2 := range right.MapKeys() {
-			// Skip the key if it has already been marked as matched.
-			if _, ok := marked[j]; ok {
-				continue
-			}
-
-			// Calculate the match score between the values of the keys and add
-			// it to the total score if the result is not 0.
-			if result := compare(left.MapIndex(v1).Interface(), right.MapIndex(v2).Interface()); result != 0 {
-				res += result
-				marked[j] = struct{}{}
-			}
+	for _, k := range left.MapKeys() {
+		// If the corresponding key exists in the right map, calculate the match
+		// score between the values and add it to the total score.
+		// Mark the key as matched.
+		if right.MapIndex(k).IsValid() {
+			res += compare(left.MapIndex(k).Interface(), right.MapIndex(k).Interface())
+			marked[right.MapIndex(k)] = true
 		}
 	}
 
-	// Calculate the maximum number of keys in the two maps.
-	total := max(left.Len(), right.Len())
+	// Iterate over the keys of the right map.
+	// If a key has not been marked as matched, calculate the match score between
+	// the corresponding values in the left and right maps and add it to the total
+	// score.
+	for _, k := range right.MapKeys() {
+		if _, ok := marked[k]; ok {
+			continue
+		}
+
+		if left.MapIndex(k).IsValid() {
+			res += compare(left.MapIndex(k).Interface(), right.MapIndex(k).Interface())
+		}
+	}
 
 	// If the total score is 0 and the maximum number of keys is 0, return 1.
 	if res == 0 && total == 0 {

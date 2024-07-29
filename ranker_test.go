@@ -1,7 +1,8 @@
 package deeply_test
 
 import (
-	"sort"
+	"cmp"
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,8 +11,8 @@ import (
 )
 
 func ranker(expect any, actual []any) []any {
-	sort.SliceStable(actual, func(i, j int) bool {
-		return deeply.RankMatch(expect, actual[i]) > deeply.RankMatch(expect, actual[j])
+	slices.SortFunc(actual, func(x, y any) int {
+		return cmp.Compare(deeply.RankMatch(expect, y), deeply.RankMatch(expect, x))
 	})
 
 	return actual
