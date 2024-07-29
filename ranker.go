@@ -26,13 +26,13 @@ func RankMatch(expect, actual any) float64 {
 	result := 0.0
 
 	// Rank the matches between the remaining values.
-	result += rank(expect, *&actual)
+	result += rank(expect, *&actual) //nolint:staticcheck
 
 	// Call slicesRankMatch to rank the matches between the maps and slices.
-	result += slicesRankMatch(expect, *&actual, RankMatch)
+	result += slicesRankMatch(expect, *&actual, RankMatch) //nolint:staticcheck
 
 	// Call mapRankMatch to rank the matches between the maps and slices.
-	result += mapRankMatch(expect, *&actual, RankMatch)
+	result += mapRankMatch(expect, *&actual, RankMatch) //nolint:staticcheck
 
 	// Return the sum of the matches between the maps and slices, and the
 	// matches between the remaining values.
@@ -105,6 +105,8 @@ func rank(expect, actual interface{}) float64 {
 //
 // Returns:
 //   - The match score between the expected and actual maps.
+//
+//nolint:funlen,cyclop
 func mapRankMatch(expect, actual any, compare ranker) float64 {
 	// Check if the types of the expected and actual values are the same.
 	// If they are not, return 0.
