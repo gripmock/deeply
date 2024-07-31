@@ -3,6 +3,8 @@ package deeply
 import (
 	"reflect"
 	"regexp"
+
+	"github.com/spf13/cast"
 )
 
 // Ranker is a function type used to rank matches between two values.
@@ -42,6 +44,16 @@ func RankMatch(expect, actual any) float64 {
 // rank is a function that ranks the matches between two strings.
 //
 // It compares two strings and returns a float64 representing the match score.
+// The function first checks if the actual value is a boolean and returns 0 if it is.
+// Then it converts the expected and actual values to strings. If the values are not
+// strings or if there is an error converting them to strings, the function checks
+// if the values are deeply equal and returns the corresponding match score.
+// If the strings are equal, the function returns the full match score.
+// Next, the function tries to compile the expected string as a regular expression
+// and finds the first match in the actual string. If a match is found, the function
+// calculates the match score based on the length of the match. If no match is found,
+// the function calculates the match score based on the Levenshtein distance
+// between the two strings.
 //
 // Parameters:
 // - expect: The expected string.
@@ -50,15 +62,20 @@ func RankMatch(expect, actual any) float64 {
 // Returns:
 // - The match score between the expected and actual strings.
 func rank(expect, actual interface{}) float64 {
+	// Check if the actual value is a boolean and return 0 if it is.
+	if _, ok := actual.(bool); ok {
+		return 0
+	}
+
 	// Convert the expected and actual values to strings.
 	var (
 		expectedStr, expectedStringOk = expect.(string)
-		actualStr, actualStringOk     = actual.(string)
+		actualStr, actualStringErr    = cast.ToStringE(actual)
 	)
 
-	// If the values are not strings, check if they are equal and return the
-	// corresponding match score.
-	if !expectedStringOk || !actualStringOk {
+	// If the values are not strings or if there is an error converting them to strings,
+	// check if the values are deeply equal and return the corresponding match score.
+	if !expectedStringOk || actualStringErr != nil {
 		if reflect.DeepEqual(expect, actual) {
 			return 1 // Full match.
 		}
@@ -72,15 +89,15 @@ func rank(expect, actual interface{}) float64 {
 	}
 
 	// Try to compile the expected string as a regular expression and find the
-	// first match in the actual string. Return the match score based on the
-	// length of the match.
+	// first match in the actual string. If a match is found, calculate the match
+	// score based on the length of the match.
 	compile, err := regexp.Compile(expectedStr)
 	if compile != nil && err == nil {
 		results := compile.FindStringIndex(actualStr)
 
 		// If a match is found, calculate the match score based on the length of
 		// the match.
-		if len(results) == 2 { //nolint:mnd
+		if len(results) == 2 && len(actualStr) > 0 { //nolint:mnd
 			return float64(results[1]-results[0]) / float64(len(actualStr))
 		}
 	}
