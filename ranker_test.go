@@ -124,3 +124,13 @@ func TestRankMatch_Boundary(t *testing.T) {
 
 	require.Greater(t, deeply.RankMatch(map[string]interface{}{}, map[string]interface{}{}), 0.)
 }
+
+func TestRankMatch_RegularDigits(t *testing.T) {
+	require.Greater(t, deeply.RankMatch("[0-9]", 9), 0.)
+	require.Greater(t, deeply.RankMatch("^100[1-2]{2}\\d{0,3}$", 10012), .1)
+
+	require.Greater(t, deeply.RankMatch(
+		map[any]any{"vint64": "^100[1-2]{2}\\d{0,3}$"},
+		map[any]any{"vint64": 10012},
+	), 0.)
+}

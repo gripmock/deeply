@@ -126,6 +126,12 @@ func TestMatches_Slices_OrderIgnore(t *testing.T) {
 
 func TestMatches_RegularDigits(t *testing.T) {
 	require.True(t, deeply.Matches("[0-9]", 9))
+	require.True(t, deeply.Matches("^100[1-2]{2}\\d{0,3}$", 10012))
+
+	require.True(t, deeply.Matches(
+		map[any]any{"vint64": "^100[1-2]{2}\\d{0,3}$"},
+		map[any]any{"vint64": 10012},
+	))
 }
 
 //nolint:funlen
