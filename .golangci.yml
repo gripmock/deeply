@@ -6,8 +6,7 @@ linters:
     # turn on later
     - godox
     # deprecated
-    - gomnd
-    - execinquery
+    - tenv
     # not relevant
     - varnamelen
     - wrapcheck

@@ -97,7 +97,7 @@ func rank(expect, actual interface{}) float64 {
 
 		// If a match is found, calculate the match score based on the length of
 		// the match.
-		if len(results) == 2 && len(actualStr) > 0 { //nolint:mnd
+		if len(results) == 2 && len(actualStr) > 0 {
 			return float64(results[1]-results[0]) / float64(len(actualStr))
 		}
 	}
@@ -123,7 +123,7 @@ func rank(expect, actual interface{}) float64 {
 // Returns:
 //   - The match score between the expected and actual maps.
 //
-//nolint:funlen,cyclop
+//nolint:cyclop
 func mapRankMatch(expect, actual any, compare ranker) float64 {
 	// Check if the types of the expected and actual values are the same.
 	// If they are not, return 0.
