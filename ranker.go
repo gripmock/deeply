@@ -275,44 +275,120 @@ func slicesRankMatch(expect, actual any, compare ranker) float64 {
 // - s: The first string.
 // - t: The second string.
 func distance(s, t string) float64 {
-	// Convert the strings to runes.
-	r1, r2 := []rune(s), []rune(t)
-
-	// Create a column of integers to store the edit distances.
-	column := make([]int, 1, 64) //nolint:mnd // Initial size is 1, capacity is 64.
-
-	// Populate the column with the row indices (0, 1, 2, ...).
-	for y := 1; y <= len(r1); y++ {
-		column = append(column, y)
+	// Fast path for identical strings
+	if s == t {
+		return 1.0
 	}
 
-	// Iterate over the columns of the matrix.
-	for x := 1; x <= len(r2); x++ {
-		// Set the first element of the column to the current column index.
-		column[0] = x
+	// Fast path for empty strings
+	lenS, lenT := len(s), len(t)
+	if lenS == 0 || lenT == 0 {
+		return 0.0
+	}
 
-		// Iterate over the rows of the matrix.
-		for y, lastDiag := 1, x-1; y <= len(r1); y++ {
-			// Store the previous diagonal value.
+	// ASCII fast path optimization (common case)
+	if isASCII(s) && isASCII(t) {
+		return distanceASCII(s, t)
+	}
+
+	// Unicode path for non-ASCII strings
+	r1, r2 := []rune(s), []rune(t)
+	len1, len2 := len(r1), len(r2)
+
+	column := make([]int, len1+1)
+	for y := range column {
+		column[y] = y
+	}
+
+	for x := 1; x <= len2; x++ {
+		r2char := r2[x-1]
+		column[0] = x
+		lastDiag := x - 1
+
+		for y := 1; y <= len1; y++ {
 			oldDiag := column[y]
 
-			// Calculate the cost of the current edit operation.
 			cost := 0
-			if r1[y-1] != r2[x-1] {
+			if r1[y-1] != r2char {
 				cost = 1
 			}
 
-			// Update the current cell of the column.
-			column[y] = min(column[y]+1, column[y-1]+1, lastDiag+cost)
+			column[y] = min(
+				column[y]+1, // deletion
+				min(column[y-1]+1, // insertion
+					lastDiag+cost), // substitution
+			)
 
-			// Store the previous diagonal value for the next iteration.
 			lastDiag = oldDiag
 		}
 	}
 
-	// Calculate the length of the longer string.
-	length := float64(max(len(s), len(t)))
+	maxLength := max(len1, len2)
 
-	// Return the normalized Levenshtein distance.
-	return (length - float64(column[len(r1)])) / length
+	return (float64(maxLength) - float64(column[len1])) / float64(maxLength)
+}
+
+// ASCII-optimized version with stack-allocated buffer.
+func distanceASCII(s, t string) float64 {
+	lenS, lenT := len(s), len(t)
+
+	// Use stack allocation for small strings (common case)
+	const maxStackLen = 64
+
+	var (
+		columnStack [maxStackLen]int
+		column      []int
+	)
+
+	if lenS+1 <= maxStackLen {
+		column = columnStack[:lenS+1]
+	} else {
+		column = make([]int, lenS+1)
+	}
+
+	// Initialize column using copy for small sizes
+	if lenS+1 <= maxStackLen {
+		copy(column, columnStack[:])
+	} else {
+		for y := range column {
+			column[y] = y
+		}
+	}
+
+	for x := 1; x <= lenT; x++ {
+		tChar := t[x-1]
+		column[0] = x
+		lastDiag := x - 1
+
+		for y := 1; y <= lenS; y++ {
+			oldDiag := column[y]
+
+			cost := 0
+			if s[y-1] != tChar {
+				cost = 1
+			}
+
+			column[y] = min(
+				column[y]+1,
+				min(column[y-1]+1, lastDiag+cost),
+			)
+
+			lastDiag = oldDiag
+		}
+	}
+
+	maxLength := max(lenS, lenT)
+
+	return (float64(maxLength) - float64(column[lenS])) / float64(maxLength)
+}
+
+// isASCII checks if a string contains only ASCII characters.
+func isASCII(s string) bool {
+	for i := range len(s) {
+		if s[i] >= 128 { //nolint:mnd
+			return false
+		}
+	}
+
+	return true
 }
