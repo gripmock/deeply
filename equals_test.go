@@ -16,18 +16,18 @@ func TestEquals_Simple(t *testing.T) {
 }
 
 func TestEquals_Map_Left(t *testing.T) {
-	a := map[string]interface{}{
+	a := map[string]any{
 		"a": "a",
 		"b": "b",
-		"c": map[string]interface{}{
+		"c": map[string]any{
 			"f": []string{"a", "b", "c"},
 			"d": "d",
 			"e": []int{1, 2, 3},
 		},
 	}
 
-	b := map[string]interface{}{
-		"c": map[string]interface{}{
+	b := map[string]any{
+		"c": map[string]any{
 			"d": "d",
 			"e": []int{1, 2, 3},
 			"f": []string{"a", "b", "c"},
@@ -48,18 +48,18 @@ func TestEquals_Map_Left(t *testing.T) {
 }
 
 func TestEquals_Map_Right(t *testing.T) {
-	a := map[string]interface{}{
+	a := map[string]any{
 		"a": "a",
 		"b": "b",
-		"c": map[string]interface{}{
+		"c": map[string]any{
 			"f": []string{"a", "b", "c"},
 			"d": "d",
 			"e": []int{1, 2, 3},
 		},
 	}
 
-	b := map[string]interface{}{
-		"c": map[string]interface{}{
+	b := map[string]any{
+		"c": map[string]any{
 			"d": "d",
 			"e": []int{1, 2, 3},
 			"f": []string{"a", "b", "c"},
@@ -85,10 +85,10 @@ func TestEquals_Slices_Left(t *testing.T) {
 	require.False(t, deeply.Equals([]int{1, 3, 2}, []int{1, 2, 3}))
 	require.False(t, deeply.Equals([]int{1, 2}, []int{1, 2, 3}))
 
-	require.True(t, deeply.Equals([]interface{}{1, 2, 3}, []interface{}{1, 2, 3}))
+	require.True(t, deeply.Equals([]any{1, 2, 3}, []any{1, 2, 3}))
 
-	require.False(t, deeply.Equals([]interface{}{1, 3, 2}, []interface{}{1, 2, 3}))
-	require.False(t, deeply.Equals([]interface{}{1, 2}, []interface{}{1, 2, 3}))
+	require.False(t, deeply.Equals([]any{1, 3, 2}, []any{1, 2, 3}))
+	require.False(t, deeply.Equals([]any{1, 2}, []any{1, 2, 3}))
 }
 
 func TestEquals_Slices_Right(t *testing.T) {
@@ -97,10 +97,10 @@ func TestEquals_Slices_Right(t *testing.T) {
 	require.False(t, deeply.Equals([]int{1, 2, 3}, []int{1, 3, 2}))
 	require.False(t, deeply.Equals([]int{1, 2, 3}, []int{1, 2}))
 
-	require.True(t, deeply.Equals([]interface{}{1, 2, 3}, []interface{}{1, 2, 3}))
+	require.True(t, deeply.Equals([]any{1, 2, 3}, []any{1, 2, 3}))
 
-	require.False(t, deeply.Equals([]interface{}{1, 2, 3}, []interface{}{1, 3, 2}))
-	require.False(t, deeply.Equals([]interface{}{1, 2, 3}, []interface{}{1, 2}))
+	require.False(t, deeply.Equals([]any{1, 2, 3}, []any{1, 3, 2}))
+	require.False(t, deeply.Equals([]any{1, 2, 3}, []any{1, 2}))
 }
 
 func TestEquals_Slices_OrderIgnore(t *testing.T) {
@@ -110,11 +110,11 @@ func TestEquals_Slices_OrderIgnore(t *testing.T) {
 
 	require.True(t, deeply.EqualsIgnoreArrayOrder([]int{1, 2, 3}, []int{1, 2, 3}))
 	require.True(t, deeply.EqualsIgnoreArrayOrder([]int{1, 2, 3}, []int{1, 3, 2}))
-	require.True(t, deeply.EqualsIgnoreArrayOrder([]interface{}{1, 2, 3}, []interface{}{1, 2, 3}))
-	require.True(t, deeply.EqualsIgnoreArrayOrder([]interface{}{1, 2, 3}, []interface{}{1, 3, 2}))
+	require.True(t, deeply.EqualsIgnoreArrayOrder([]any{1, 2, 3}, []any{1, 2, 3}))
+	require.True(t, deeply.EqualsIgnoreArrayOrder([]any{1, 2, 3}, []any{1, 3, 2}))
 
 	require.False(t, deeply.EqualsIgnoreArrayOrder([]int{1, 2, 3}, []int{1, 2}))
-	require.False(t, deeply.EqualsIgnoreArrayOrder([]interface{}{1, 2, 3}, []interface{}{1, 2}))
+	require.False(t, deeply.EqualsIgnoreArrayOrder([]any{1, 2, 3}, []any{1, 2}))
 }
 
 func TestEquals_Boundary(t *testing.T) {
@@ -124,29 +124,29 @@ func TestEquals_Boundary(t *testing.T) {
 
 	require.True(t, deeply.Equals(nil, nil))
 
-	require.True(t, deeply.Equals(map[string]interface{}{
+	require.True(t, deeply.Equals(map[string]any{
 		"name": "Afra Gokce",
 		"age":  1,
 		"girl": true,
 		"null": nil,
-		"greetings": map[string]interface{}{
+		"greetings": map[string]any{
 			"hola":    "mundo",
 			"merhaba": "dunya",
 		},
-		"cities": []interface{}{
+		"cities": []any{
 			"Istanbul",
 			"Jakarta",
 		},
-	}, map[string]interface{}{
+	}, map[string]any{
 		"name": "Afra Gokce",
 		"age":  1,
 		"girl": true,
 		"null": nil,
-		"greetings": map[string]interface{}{
+		"greetings": map[string]any{
 			"hola":    "mundo",
 			"merhaba": "dunya",
 		},
-		"cities": []interface{}{
+		"cities": []any{
 			"Istanbul",
 			"Jakarta",
 		},

@@ -111,7 +111,7 @@ func mapDeepMatches(expect, actual any, compare cmp) bool {
 // If there is an error converting the expected or actual values to strings, or if
 // there is an error matching the regular expression with the string, the function
 // logs the error and returns false.
-func regexMatch(expect, actual interface{}) bool {
+func regexMatch(expect, actual any) bool {
 	// If actual is a boolean, return false.
 	if _, ok := actual.(bool); ok {
 		return false

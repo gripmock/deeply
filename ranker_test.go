@@ -32,10 +32,10 @@ func TestRankMatch_Simple(t *testing.T) {
 }
 
 func TestRankMatch_Map_Left(t *testing.T) {
-	a := map[string]interface{}{
+	a := map[string]any{
 		"a": "a",
 		"b": "b",
-		"c": map[string]interface{}{
+		"c": map[string]any{
 			"f": []string{"a", "b", "c"},
 			"d": "d",
 			"e": []int{1, 2, 3},
@@ -44,8 +44,8 @@ func TestRankMatch_Map_Left(t *testing.T) {
 		"cities": []string{"Jakarta", "Istanbul", ".*grad$"},
 	}
 
-	b := map[string]interface{}{
-		"c": map[string]interface{}{
+	b := map[string]any{
+		"c": map[string]any{
 			"d": "d",
 			"e": []int{1, 2, 3},
 			"f": []string{"a", "b", "c"},
@@ -56,8 +56,8 @@ func TestRankMatch_Map_Left(t *testing.T) {
 		"cities": []string{"Jakarta", "Istanbul", "Stalingrad"},
 	}
 
-	c := map[string]interface{}{
-		"c": map[string]interface{}{
+	c := map[string]any{
+		"c": map[string]any{
 			"d": "d",
 			"e": []int{1, 2, 3},
 			"f": []string{"a", "b", "c"},
@@ -72,18 +72,18 @@ func TestRankMatch_Map_Left(t *testing.T) {
 }
 
 func TestRankMatch_Map_Right(t *testing.T) {
-	a := map[string]interface{}{
+	a := map[string]any{
 		"a": "[a-z]",
 		"b": "b",
-		"c": map[string]interface{}{
+		"c": map[string]any{
 			"f": []string{"[a-z]", "[0-9]", "c"},
 			"d": "d",
 			"e": []int{1, 2, 3},
 		},
 	}
 
-	b := map[string]interface{}{
-		"c": map[string]interface{}{
+	b := map[string]any{
+		"c": map[string]any{
 			"d": "d",
 			"e": []int{1, 2, 3},
 			"f": []string{"d", "1", "c"},
@@ -92,8 +92,8 @@ func TestRankMatch_Map_Right(t *testing.T) {
 		"a": "c",
 	}
 
-	c := map[string]interface{}{
-		"c": map[string]interface{}{
+	c := map[string]any{
+		"c": map[string]any{
 			"d": "d",
 			"e": []int{1, 2, 3},
 			"f": []string{"a", "b", "c"},
@@ -115,14 +115,14 @@ func TestRankMatch_Boundary(t *testing.T) {
 			[]string{"[a]", "[b]", "[cd]"},
 			[]any{[]string{"a", "b", "c"}, []string{"a", "b", "d"}, []string{"a", "c", "d"}}))
 
-	require.Greater(t, deeply.RankMatch(map[string]interface{}{
+	require.Greater(t, deeply.RankMatch(map[string]any{
 		"field1": "hello field1",
 		"field3": "hello field3",
-	}, map[string]interface{}{
+	}, map[string]any{
 		"field1": "hello field1",
 	}), 0.)
 
-	require.Greater(t, deeply.RankMatch(map[string]interface{}{}, map[string]interface{}{}), 0.)
+	require.Greater(t, deeply.RankMatch(map[string]any{}, map[string]any{}), 0.)
 }
 
 func TestRankMatch_RegularDigits(t *testing.T) {
