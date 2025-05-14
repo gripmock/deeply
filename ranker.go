@@ -8,37 +8,37 @@ import (
 )
 
 // Ranker is a function type used to rank matches between two values.
-type ranker func(expect, actual interface{}) float64
+type ranker func(expect, actual any) float64
 
-// RankMatch is the main function used to rank matches between two values.
+// RankMatch calculates a match score between expected and actual values.
 //
-// This function recursively ranks the matches between maps and slices, and then
-// ranks the matches between the remaining values. The function returns the sum
-// of the matches between the maps and slices, and the matches between the
-// remaining values.
+// This function uses recursive matching for maps and slices and assesses
+// the match for other types. The final score is the cumulative result of
+// matches for maps, slices, and other values.
 //
 // Parameters:
-//   - expect: The expected value.
+//   - expected: The expected value.
 //   - actual: The actual value.
 //
 // Returns:
-//   - The total match score between the expected and actual values.
-func RankMatch(expect, actual any) float64 {
-	// Initialize the total score to 0.
-	result := 0.0
+//   - A float64 representing the cumulative match score.
+func RankMatch(expected, actual any) float64 {
+	// Special case handling for empty maps.
+	if value, ok := expected.(map[string]any); ok && len(value) == 0 {
+		return 0.1 //nolint:mnd
+	}
 
-	// Rank the matches between the remaining values.
-	result += rank(expect, *&actual) //nolint:staticcheck
+	// Calculate the match score for non-collection types.
+	score := rank(expected, actual)
 
-	// Call slicesRankMatch to rank the matches between the maps and slices.
-	result += slicesRankMatch(expect, *&actual, RankMatch) //nolint:staticcheck
+	// Include scores from slice comparisons.
+	score += slicesRankMatch(expected, actual, RankMatch)
 
-	// Call mapRankMatch to rank the matches between the maps and slices.
-	result += mapRankMatch(expect, *&actual, RankMatch) //nolint:staticcheck
+	// Include scores from map comparisons.
+	score += mapRankMatch(expected, actual, RankMatch)
 
-	// Return the sum of the matches between the maps and slices, and the
-	// matches between the remaining values.
-	return result
+	// Return the total match score.
+	return score
 }
 
 // rank is a function that ranks the matches between two strings.
@@ -61,7 +61,7 @@ func RankMatch(expect, actual any) float64 {
 //
 // Returns:
 // - The match score between the expected and actual strings.
-func rank(expect, actual interface{}) float64 {
+func rank(expect, actual any) float64 {
 	// Check if the actual value is a boolean and return 0 if it is.
 	if _, ok := actual.(bool); ok {
 		return 0
