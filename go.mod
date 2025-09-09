@@ -3,7 +3,7 @@ module github.com/gripmock/deeply
 go 1.24
 
 require (
-	github.com/spf13/cast v1.9.2
+	github.com/spf13/cast v1.10.0
 	github.com/stretchr/testify v1.11.1
 )
 
